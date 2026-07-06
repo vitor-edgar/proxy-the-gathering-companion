@@ -16,7 +16,6 @@
             <h1>PTG Balance</h1>
             <nav class="tabs">
                 <button class="tab-btn active" data-target="tracker-view">Saldo</button>
-                <button class="tab-btn" data-target="tasks-view">Tarefas</button>
                 <button class="tab-btn" data-target="history-view">Histórico</button>
                 <button class="tab-btn" data-target="regulations-view">Regulamento</button>
                 <button class="tab-btn" data-target="deck-guide-view">Montar Deck</button>
@@ -31,69 +30,56 @@
                     <div id="balance">R$ 0,00</div>
                 </div>
 
-                <section class="action-section">
-                    <h2>Ganhos (Créditos)</h2>
+                <!-- Main Actions -->
+                <div id="tracker-main-actions" class="tracker-section">
+                    <button id="btn-show-tasks" class="btn-action credit">Registrar Tarefa</button>
+                    <button id="btn-show-buy" class="btn-action debit">Comprar</button>
+                    <button id="btn-show-sell" class="btn-action credit">Vender</button>
+                </div>
+
+                <!-- Register Task Section -->
+                <div id="section-register-task" class="tracker-section hidden">
+                    <div class="section-header">
+                        <button class="btn-back">← Voltar</button>
+                        <h2>Registrar Tarefa</h2>
+                    </div>
+                    <input type="text" id="task-search-input" placeholder="Buscar tarefa..." autocomplete="off">
+                    <div id="task-search-results" class="dynamic-list">
+                        <!-- Tasks will be listed here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Buy Section -->
+                <div id="section-buy" class="tracker-section hidden">
+                    <div class="section-header">
+                        <button class="btn-back">← Voltar</button>
+                        <h2>Comprar</h2>
+                    </div>
+                    <div class="grid buy-grid">
+                        <button class="buy-option" data-item="Carta">Carta<br><small>Valor manual</small></button>
+                        <button class="buy-option" data-item="Comum" data-value="0.88">Comum<br><small>R$ 0,88</small></button>
+                        <button class="buy-option" data-item="Incomum" data-value="1.48">Incomum<br><small>R$ 1,48</small></button>
+                        <button class="buy-option" data-item="Rara" data-value="1.68">Rara<br><small>R$ 1,68</small></button>
+                        <button class="buy-option" data-item="Mítica" data-value="5.95">Mítica<br><small>R$ 5,95</small></button>
+                        <button class="buy-option" data-item="Terreno Básico" data-value="4.46">Terreno Básico<br><small>R$ 4,46</small></button>
+                        <button class="buy-option" data-item="Secret Lair" data-value="50">Secret Lair<br><small>R$ 50</small></button>
+                        <button class="buy-option" data-item="Precon" data-value="300">Precon<br><small>R$ 300</small></button>
+                    </div>
+                </div>
+
+                <!-- Sell Section -->
+                <div id="section-sell" class="tracker-section hidden">
+                    <div class="section-header">
+                        <button class="btn-back">← Voltar</button>
+                        <h2>Vender</h2>
+                    </div>
                     <div class="input-group">
-                        <input type="number" id="credit-input" placeholder="Valor manual" step="0.01">
-                        <button id="add-credit-btn" class="btn-main credit">Adicionar</button>
-                    </div>
-                    
-                    <div class="grid shortcuts">
-                        <button class="shortcut credit" data-value="2"><span>Tarefa Muito Simples</span><strong>+ R$ 2</strong></button>
-                        <button class="shortcut credit" data-value="5"><span>Tarefa Simples</span><strong>+ R$ 5</strong></button>
-                        <button class="shortcut credit" data-value="15"><span>Tarefa Importante</span><strong>+ R$ 15</strong></button>
-                        <button class="shortcut credit" data-value="20"><span>Tarefa Prioritária</span><strong>+ R$ 20</strong></button>
-                        <button class="shortcut credit" data-value="50"><span>Conquistas</span><strong>+ R$ 50</strong></button>
-                    </div>
-                </section>
-
-                <hr>
-
-                <section class="action-section">
-                    <h2>Gastos (Despesas)</h2>
-                    <div class="input-group">
-                        <input type="number" id="debit-input" placeholder="Valor manual" step="0.01">
-                        <button id="add-debit-btn" class="btn-main debit">Deduzir</button>
-                    </div>
-                    <div class="grid shortcuts debit-grid">
-                        <button class="shortcut debit" data-value="2"><span>Carta</span><strong>- R$ 2</strong><small>1 carta</small></button>
-                        <button class="shortcut debit" data-value="25"><span>Play Booster</span><strong>- R$ 25</strong><small>14 cartas</small></button>
-                        <button class="shortcut debit" data-value="225"><span>Bundle</span><strong>- R$ 225</strong><small>126 cartas</small></button>
-                        <button class="shortcut debit" data-value="250"><span>Precon</span><strong>- R$ 250</strong><small>100 cartas</small></button>
-                        <button class="shortcut debit" data-value="900"><span>Booster Box</span><strong>- R$ 900</strong><small>504 cartas</small></button>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Tasks View -->
-            <div id="tasks-view" class="view hidden">
-                <div class="tasks-content">
-                    <h2>Minhas Tarefas</h2>
-                    <div class="add-task-form">
-                        <input type="text" id="task-name-input" placeholder="Nova tarefa...">
-                        <select id="task-category-select">
-                            <option value="2">0. Muito Simples (R$ 2)</option>
-                            <option value="5">I. Simples (R$ 5)</option>
-                            <option value="15">II. Importante (R$ 15)</option>
-                            <option value="20">III. Prioritária (R$ 20)</option>
-                            <option value="50">IV. Suprema (R$ 50)</option>
-                        </select>
-                        <button id="add-task-btn" class="btn-main credit">Adicionar</button>
-                    </div>
-                    
-                    <div id="tasks-list" class="tasks-container">
-                        <!-- Tarefas pendentes -->
-                    </div>
-
-                    <div class="tasks-history-section">
-                        <hr>
-                        <h3>Histórico de Tarefas (Hoje)</h3>
-                        <div id="tasks-history-list" class="tasks-container">
-                            <!-- Tarefas concluídas -->
-                        </div>
+                        <input type="number" id="sell-input" placeholder="Valor da venda" step="0.01">
+                        <button id="btn-do-sell" class="btn-main credit">Vender</button>
                     </div>
                 </div>
             </div>
+
 
             <!-- History View -->
             <div id="history-view" class="view hidden">
@@ -121,14 +107,54 @@
             </div>
         </main>
 
-        <!-- Activity Name Modal -->
-        <div id="activity-modal" class="modal hidden">
+
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="modal hidden">
             <div class="modal-content">
-                <h3>Nome da Atividade</h3>
-                <input type="text" id="activity-name-input" placeholder="Ex: Café, Malhar, Task...">
+                <h3 id="confirm-modal-title">Confirmar</h3>
+                <p id="confirm-modal-body"></p>
                 <div class="modal-actions">
-                    <button id="cancel-activity-btn" class="btn-secondary">Cancelar</button>
-                    <button id="confirm-activity-btn" class="btn-main credit">Confirmar</button>
+                    <button id="confirm-modal-cancel" class="btn-secondary">Cancelar</button>
+                    <button id="confirm-modal-ok" class="btn-main credit">Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Task Modal (within Tracker) -->
+        <div id="create-task-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Nova Tarefa</h3>
+                <div class="modal-form">
+                    <input type="text" id="new-task-name" placeholder="Nome da Tarefa">
+                    <input type="number" id="new-task-value" placeholder="Valor da Recompensa" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button id="create-task-cancel" class="btn-secondary">Cancelar</button>
+                    <button id="create-task-confirm" class="btn-main credit">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buy Modal -->
+        <div id="buy-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="buy-modal-title">Comprar Item</h3>
+                <div class="modal-form">
+                    <div id="buy-price-group">
+                        <label>Preço Unitário (R$)</label>
+                        <input type="number" id="buy-price-input" placeholder="0,00" step="0.01">
+                    </div>
+                    <div>
+                        <label>Quantidade</label>
+                        <input type="number" id="buy-quantity-input" value="1" min="1">
+                    </div>
+                    <div id="buy-total-display" class="total-display">
+                        Total: R$ 0,00
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="buy-modal-cancel" class="btn-secondary">Cancelar</button>
+                    <button id="buy-modal-confirm" class="btn-main debit">Confirmar</button>
                 </div>
             </div>
         </div>

@@ -272,19 +272,139 @@ hr {
     margin: 30px 0;
 }
 
-#notification {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--debit);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
+/* Tracker New Layout */
+.tracker-section {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-action {
+    padding: 20px;
+    font-size: 1.1rem;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    transition: opacity 0.3s;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s;
+    color: white;
+}
+
+.btn-action:active {
+    transform: scale(0.98);
+}
+
+.btn-action.credit { background-color: var(--credit); }
+.btn-action.debit { background-color: var(--debit); }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    margin-bottom: 0;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.dynamic-list {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.dynamic-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dynamic-item:last-child {
+    border-bottom: none;
+}
+
+.dynamic-item:hover {
+    background: #f8f9fa;
+}
+
+.dynamic-item.add-btn {
+    justify-content: center;
+    color: var(--credit);
+    font-weight: bold;
+    background: #f0fff4;
+}
+
+.buy-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.buy-option {
+    padding: 20px 10px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--debit);
+    transition: all 0.2s;
+}
+
+.buy-option:hover {
+    background: #fff5f5;
+    border-color: var(--debit);
+}
+
+.buy-option small {
+    display: block;
+    margin-top: 5px;
+    opacity: 0.7;
+    font-weight: normal;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+#task-search-input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.total-display {
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: right;
+    color: var(--debit);
+    font-size: 1.2rem;
+}
+
+.modal-form label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    color: var(--primary);
+    font-weight: 600;
 }
 
 .hidden {
@@ -413,6 +533,43 @@ hr {
     text-align: left;
 }
 
+.task-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+#recurring-interval-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 24px;
+}
+
+#recurring-interval-group input {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    flex: none;
+}
+
+.task-item.recurring .task-name small {
+    margin-left: 5px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
 .task-item {
     display: flex;
     justify-content: space-between;
@@ -469,6 +626,25 @@ hr {
 
 .complete-btn:hover {
     background: var(--credit-hover);
+}
+
+.uncomplete-btn {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+}
+
+.uncomplete-btn:hover {
+    background: #7f8c8d;
 }
 
 .task-item.completed {

@@ -21,39 +21,54 @@ if (transactions.length > 10) {
     localStorage.setItem('ptg_transactions', JSON.stringify(transactions));
 }
 
-// Pending transaction for modal
-let pendingAmount = 0;
 
 // DOM Elements
 const balanceEl = document.getElementById('balance');
 const balanceContainer = document.getElementById('balance-container');
-const creditInput = document.getElementById('credit-input');
-const debitInput = document.getElementById('debit-input');
-const addCreditBtn = document.getElementById('add-credit-btn');
-const addDebitBtn = document.getElementById('add-debit-btn');
+// New Tracker Elements
+const trackerMainActions = document.getElementById('tracker-main-actions');
+const sectionRegisterTask = document.getElementById('section-register-task');
+const sectionBuy = document.getElementById('section-buy');
+const sectionSell = document.getElementById('section-sell');
+
+const btnShowTasks = document.getElementById('btn-show-tasks');
+const btnShowBuy = document.getElementById('btn-show-buy');
+const btnShowSell = document.getElementById('btn-show-sell');
+
+const taskSearchInput = document.getElementById('task-search-input');
+const taskSearchResults = document.getElementById('task-search-results');
+const sellInput = document.getElementById('sell-input');
+const btnDoSell = document.getElementById('btn-do-sell');
+
+// Modals
+const confirmModal = document.getElementById('confirm-modal');
+const confirmModalTitle = document.getElementById('confirm-modal-title');
+const confirmModalBody = document.getElementById('confirm-modal-body');
+const confirmModalOk = document.getElementById('confirm-modal-ok');
+const confirmModalCancel = document.getElementById('confirm-modal-cancel');
+
+const createTaskModal = document.getElementById('create-task-modal');
+const newTaskName = document.getElementById('new-task-name');
+const newTaskValue = document.getElementById('new-task-value');
+const createTaskConfirm = document.getElementById('create-task-confirm');
+const createTaskCancel = document.getElementById('create-task-cancel');
+
+const buyModal = document.getElementById('buy-modal');
+const buyModalTitle = document.getElementById('buy-modal-title');
+const buyPriceInput = document.getElementById('buy-price-input');
+const buyQuantityInput = document.getElementById('buy-quantity-input');
+const buyTotalDisplay = document.getElementById('buy-total-display');
+const buyModalConfirm = document.getElementById('buy-modal-confirm');
+const buyModalCancel = document.getElementById('buy-modal-cancel');
+
 const notification = document.getElementById('notification');
-const shortcuts = document.querySelectorAll('.shortcut');
 const tabBtns = document.querySelectorAll('.tab-btn');
 const views = document.querySelectorAll('.view');
 const historyList = document.getElementById('history-list');
 
-// Task Elements
-const tasksList = document.getElementById('tasks-list');
-const tasksHistoryList = document.getElementById('tasks-history-list');
-const taskNameInput = document.getElementById('task-name-input');
-const taskCategorySelect = document.getElementById('task-category-select');
-const addTaskBtn = document.getElementById('add-task-btn');
-
-// Modal Elements
-const activityModal = document.getElementById('activity-modal');
-const activityNameInput = document.getElementById('activity-name-input');
-const confirmActivityBtn = document.getElementById('confirm-activity-btn');
-const cancelActivityBtn = document.getElementById('cancel-activity-btn');
-
 // Initialize
 updateUI();
 updateHistoryUI();
-updateTasksUI();
 
 // Functions
 function updateUI() {
@@ -122,20 +137,6 @@ function recordTransaction(type, amount, name) {
     updateHistoryUI();
 }
 
-function openActivityModal(amount, defaultName = '') {
-    pendingAmount = amount;
-    activityModal.classList.remove('hidden');
-    activityNameInput.value = defaultName;
-    setTimeout(() => {
-        activityNameInput.focus();
-        activityNameInput.select();
-    }, 100);
-}
-
-function closeActivityModal() {
-    activityModal.classList.add('hidden');
-    pendingAmount = 0;
-}
 
 function deleteTransaction(id) {
     const index = transactions.findIndex(t => t.id == id);
@@ -153,98 +154,26 @@ function deleteTransaction(id) {
     }
 }
 
-// Task Functions
-function updateTasksUI() {
-    if (!tasksList || !tasksHistoryList) return;
-
-    // Render Pending Tasks
-    if (tasks.length === 0) {
-        tasksList.innerHTML = '<p class="empty-msg">Nenhuma tarefa pendente.</p>';
-    } else {
-        tasksList.innerHTML = tasks.map(task => `
-            <div class="task-item">
-                <div class="task-info">
-                    <span class="task-name">${task.name}</span>
-                    <span class="task-category">${getCategoryName(task.value)}</span>
-                </div>
-                <div class="task-actions">
-                    <button class="complete-btn" data-id="${task.id}" title="Concluir">✓</button>
-                    <button class="delete-btn" data-id="${task.id}" data-type="task" title="Excluir">×</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Render Completed Tasks (limit to 5 for the view)
-    if (tasksHistory.length === 0) {
-        tasksHistoryList.innerHTML = '<p class="empty-msg">Nenhuma tarefa concluída hoje.</p>';
-    } else {
-        tasksHistoryList.innerHTML = tasksHistory.slice().reverse().slice(0, 5).map(task => `
-            <div class="task-item completed">
-                <div class="task-info">
-                    <span class="task-name">${task.name}</span>
-                    <span class="task-category">${getCategoryName(task.value)} - R$ ${task.value}</span>
-                </div>
-                <div class="task-date" style="font-size: 0.7rem; opacity: 0.6;">${task.completedAt}</div>
-            </div>
-        `).join('');
-    }
-}
-
-function getCategoryName(value) {
-    const categories = {
-        '2': '0. Muito Simples',
-        '5': 'I. Simples',
-        '15': 'II. Importante',
-        '20': 'III. Prioritária',
-        '50': 'IV. Suprema'
-    };
-    return categories[value] || 'Geral';
-}
-
-function addTask() {
-    const name = taskNameInput.value.trim();
-    const value = parseFloat(taskCategorySelect.value);
-
-    if (name) {
-        const newTask = {
-            id: Date.now(),
-            name: name,
-            value: value,
-            createdAt: new Date().toLocaleString('pt-BR')
-        };
-        tasks.push(newTask);
-        saveTasks();
-        taskNameInput.value = '';
-        updateTasksUI();
-    }
-}
-
 function completeTask(id) {
     const index = tasks.findIndex(t => t.id == id);
     if (index !== -1) {
-        const task = tasks.splice(index, 1)[0];
-        task.completedAt = new Date().toLocaleString('pt-BR');
-        tasksHistory.push(task);
+        const task = tasks[index];
+        const taskCopy = { ...task, completedAt: new Date().toLocaleString('pt-BR') };
+        tasksHistory.push(taskCopy);
         
         // Record as a transaction
         recordTransaction('credit', task.value, `Tarefa: ${task.name}`);
         
+        if (task.isRecurring) {
+            task.lastCompleted = Date.now();
+        } else {
+            tasks.splice(index, 1);
+        }
+        
         saveTasks();
-        updateTasksUI();
     }
 }
 
-function deleteTask(id, type = 'pending') {
-    if (type === 'task') {
-        const index = tasks.findIndex(t => t.id == id);
-        if (index !== -1) {
-            tasks.splice(index, 1);
-            saveTasks();
-            updateTasksUI();
-        }
-    }
-}
 
 function saveTasks() {
     // Limit tasks history to last 50 items
@@ -255,34 +184,232 @@ function saveTasks() {
     localStorage.setItem('ptg_tasks_history', JSON.stringify(tasksHistory));
 }
 
+// Tracker Logic
+function showTrackerSection(sectionId) {
+    trackerMainActions.classList.add('hidden');
+    sectionRegisterTask.classList.add('hidden');
+    sectionBuy.classList.add('hidden');
+    sectionSell.classList.add('hidden');
+    
+    document.getElementById(sectionId).classList.remove('hidden');
+}
+
+function resetTrackerView() {
+    trackerMainActions.classList.remove('hidden');
+    sectionRegisterTask.classList.add('hidden');
+    sectionBuy.classList.add('hidden');
+    sectionSell.classList.add('hidden');
+    taskSearchInput.value = '';
+}
+
+// Task Search and Filtering
+function updateTaskSearchResults(filter) {
+    if (!taskSearchResults) return;
+    const term = filter.toLowerCase();
+    const filtered = tasks.filter(t => t.name.toLowerCase().includes(term));
+    
+    let html = filtered.map(t => `
+        <div class="dynamic-item" data-id="${t.id}">
+            <span>${t.name}</span>
+            <strong>R$ ${t.value}</strong>
+        </div>
+    `).join('');
+    
+    html += `
+        <div class="dynamic-item add-btn" id="btn-open-create-task">
+            + Adicionar Nova Tarefa
+        </div>
+    `;
+    
+    taskSearchResults.innerHTML = html;
+}
+
 // Event Listeners
-addCreditBtn.addEventListener('click', () => {
-    const val = parseFloat(creditInput.value);
-    if (!isNaN(val) && val > 0) {
-        openActivityModal(val);
-        creditInput.value = '';
-    }
+if (btnShowTasks) {
+    btnShowTasks.addEventListener('click', () => {
+        showTrackerSection('section-register-task');
+        updateTaskSearchResults('');
+        setTimeout(() => taskSearchInput.focus(), 100);
+    });
+}
+
+if (btnShowBuy) {
+    btnShowBuy.addEventListener('click', () => {
+        showTrackerSection('section-buy');
+    });
+}
+
+if (btnShowSell) {
+    btnShowSell.addEventListener('click', () => {
+        showTrackerSection('section-sell');
+        setTimeout(() => sellInput.focus(), 100);
+    });
+}
+
+document.querySelectorAll('.btn-back').forEach(btn => {
+    btn.addEventListener('click', resetTrackerView);
 });
 
-addDebitBtn.addEventListener('click', () => {
-    const val = parseFloat(debitInput.value);
-    if (!isNaN(val) && val > 0) {
-        recordTransaction('debit', val, 'Gasto Manual');
-        debitInput.value = '';
-    }
-});
+if (taskSearchInput) {
+    taskSearchInput.addEventListener('input', (e) => {
+        updateTaskSearchResults(e.target.value);
+    });
+}
 
-confirmActivityBtn.addEventListener('click', () => {
-    const name = activityNameInput.value.trim() || 'Crédito';
-    recordTransaction('credit', pendingAmount, name);
-    closeActivityModal();
-});
+// Task Selection and Confirmation
+let selectedTaskId = null;
+if (taskSearchResults) {
+    taskSearchResults.addEventListener('click', (e) => {
+        const item = e.target.closest('.dynamic-item');
+        if (!item) return;
+        
+        if (item.id === 'btn-open-create-task') {
+            createTaskModal.classList.remove('hidden');
+            newTaskName.value = taskSearchInput.value;
+            newTaskValue.value = '';
+            setTimeout(() => newTaskName.focus(), 100);
+            return;
+        }
+        
+        const taskId = item.dataset.id;
+        const task = tasks.find(t => t.id == taskId);
+        if (task) {
+            selectedTaskId = taskId;
+            confirmModalTitle.textContent = 'Registrar Tarefa';
+            confirmModalBody.textContent = `Deseja registrar a conclusão de "${task.name}" e ganhar R$ ${task.value}?`;
+            confirmModal.classList.remove('hidden');
+        }
+    });
+}
 
-cancelActivityBtn.addEventListener('click', closeActivityModal);
+if (confirmModalOk) {
+    confirmModalOk.addEventListener('click', () => {
+        if (selectedTaskId) {
+            completeTask(selectedTaskId);
+            selectedTaskId = null;
+            confirmModal.classList.add('hidden');
+            resetTrackerView();
+        }
+    });
+}
 
-activityNameInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') confirmActivityBtn.click();
-});
+if (confirmModalCancel) {
+    confirmModalCancel.addEventListener('click', () => {
+        selectedTaskId = null;
+        confirmModal.classList.add('hidden');
+    });
+}
+
+// Create New Task Logic
+if (createTaskConfirm) {
+    createTaskConfirm.addEventListener('click', () => {
+        const name = newTaskName.value.trim();
+        const value = parseFloat(newTaskValue.value);
+        
+        if (name && !isNaN(value)) {
+            const newTask = {
+                id: Date.now(),
+                name: name,
+                value: value,
+                createdAt: new Date().toLocaleString('pt-BR'),
+                isRecurring: false,
+                interval: null
+            };
+            tasks.push(newTask);
+            saveTasks();
+            createTaskModal.classList.add('hidden');
+            updateTaskSearchResults(taskSearchInput.value);
+        }
+    });
+}
+
+if (createTaskCancel) {
+    createTaskCancel.addEventListener('click', () => {
+        createTaskModal.classList.add('hidden');
+    });
+}
+
+// Buy Logic
+let selectedBuyItem = null;
+const buyGrid = document.querySelector('.buy-grid');
+
+function updateBuyTotal() {
+    const price = parseFloat(buyPriceInput.value) || 0;
+    const quantity = parseInt(buyQuantityInput.value) || 0;
+    const total = price * quantity;
+    buyTotalDisplay.textContent = `Total: ${new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(total)}`;
+}
+
+if (buyGrid) {
+    buyGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.buy-option');
+        if (!btn) return;
+        
+        const item = btn.dataset.item;
+        const value = btn.dataset.value;
+        
+        selectedBuyItem = item;
+        buyModalTitle.textContent = `Comprar: ${item}`;
+        buyQuantityInput.value = 1;
+        
+        if (value) {
+            buyPriceInput.value = value;
+            buyPriceInput.readOnly = true;
+        } else {
+            buyPriceInput.value = '';
+            buyPriceInput.readOnly = false;
+        }
+        
+        updateBuyTotal();
+        buyModal.classList.remove('hidden');
+        
+        if (!value) {
+            setTimeout(() => buyPriceInput.focus(), 100);
+        } else {
+            setTimeout(() => buyQuantityInput.focus(), 100);
+        }
+    });
+}
+
+buyPriceInput.addEventListener('input', updateBuyTotal);
+buyQuantityInput.addEventListener('input', updateBuyTotal);
+
+if (buyModalConfirm) {
+    buyModalConfirm.addEventListener('click', () => {
+        const price = parseFloat(buyPriceInput.value);
+        const quantity = parseInt(buyQuantityInput.value);
+        
+        if (!isNaN(price) && price > 0 && !isNaN(quantity) && quantity > 0) {
+            const total = price * quantity;
+            const name = quantity > 1 ? `${quantity}x ${selectedBuyItem}` : selectedBuyItem;
+            recordTransaction('debit', total, `Compra: ${name}`);
+            buyModal.classList.add('hidden');
+            resetTrackerView();
+        }
+    });
+}
+
+if (buyModalCancel) {
+    buyModalCancel.addEventListener('click', () => {
+        buyModal.classList.add('hidden');
+    });
+}
+
+// Sell Logic
+if (btnDoSell) {
+    btnDoSell.addEventListener('click', () => {
+        const val = parseFloat(sellInput.value);
+        if (!isNaN(val) && val > 0) {
+            recordTransaction('credit', val, 'Venda de Cartas');
+            sellInput.value = '';
+            resetTrackerView();
+        }
+    });
+}
+
 
 // Navigation and Content Loading
 const loadedViews = {
@@ -330,50 +457,6 @@ tabBtns.forEach(btn => {
     });
 });
 
-shortcuts.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const val = parseFloat(btn.dataset.value);
-        if (btn.classList.contains('credit')) {
-            const defaultName = btn.querySelector('span')?.textContent || '';
-            openActivityModal(val, defaultName);
-        } else {
-            const itemName = btn.querySelector('span')?.textContent || 'Gasto';
-            recordTransaction('debit', val, itemName);
-        }
-    });
-});
-
-creditInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addCreditBtn.click();
-});
-
-debitInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addDebitBtn.click();
-});
-
-// Task Event Listeners
-if (addTaskBtn) {
-    addTaskBtn.addEventListener('click', addTask);
-}
-
-if (taskNameInput) {
-    taskNameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addTask();
-    });
-}
-
-if (tasksList) {
-    tasksList.addEventListener('click', (e) => {
-        const id = e.target.dataset.id;
-        if (e.target.classList.contains('complete-btn')) {
-            completeTask(id);
-        } else if (e.target.classList.contains('delete-btn')) {
-            if (confirm('Deseja excluir esta tarefa?')) {
-                deleteTask(id, 'task');
-            }
-        }
-    });
-}
 
 // History Item Deletion
 historyList.addEventListener('click', (e) => {
