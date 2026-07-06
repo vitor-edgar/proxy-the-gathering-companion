@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ptg-balance-v8';
+const CACHE_NAME = 'ptg-balance-v11';
 const ASSETS = [
   './',
   './index.html',

@@ -4,6 +4,25 @@ let transactions = JSON.parse(localStorage.getItem('ptg_transactions')) || [];
 let tasks = JSON.parse(localStorage.getItem('ptg_tasks')) || [];
 let tasksHistory = JSON.parse(localStorage.getItem('ptg_tasks_history')) || [];
 
+// Initialize default tasks if none exist
+if (tasks.length === 0) {
+    tasks = [
+        { id: 1, name: 'Escovar Dentes', value: 2.5, isRecurring: true },
+        { id: 2, name: 'Arrumar Cama', value: 5, isRecurring: true },
+        { id: 3, name: 'Café Matinal Saudável', value: 5, isRecurring: true },
+        { id: 4, name: 'Code Review', value: 10, isRecurring: true },
+        { id: 5, name: 'Potato Walk (30m)', value: 12.5, isRecurring: true },
+        { id: 6, name: 'Almoço Saudável', value: 10, isRecurring: true },
+        { id: 7, name: 'Lavar Louça', value: 5, isRecurring: true },
+        { id: 8, name: 'Completar Task Trabalho', value: 20, isRecurring: true },
+        { id: 9, name: 'Lanche Tarde Saudável', value: 5, isRecurring: true },
+        { id: 10, name: 'Jantar Saudável', value: 10, isRecurring: true },
+        { id: 11, name: 'Malhar', value: 15, isRecurring: true },
+        { id: 12, name: 'Corrida (1km)', value: 10, isRecurring: true }
+    ];
+    localStorage.setItem('ptg_tasks', JSON.stringify(tasks));
+}
+
 // Migrate existing transactions to have IDs if they don't
 let migrated = false;
 transactions = transactions.map((t, i) => {
@@ -164,11 +183,8 @@ function completeTask(id) {
         // Record as a transaction
         recordTransaction('credit', task.value, `Tarefa: ${task.name}`);
         
-        if (task.isRecurring) {
-            task.lastCompleted = Date.now();
-        } else {
-            tasks.splice(index, 1);
-        }
+        // Mark last completion but keep the task in the list for reuse
+        task.lastCompleted = Date.now();
         
         saveTasks();
     }
