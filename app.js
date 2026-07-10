@@ -34,9 +34,9 @@ transactions = transactions.map((t, i) => {
 });
 if (migrated) localStorage.setItem('ptg_transactions', JSON.stringify(transactions));
 
-// Limit history to 10 items to save space and consolidate old balance
-if (transactions.length > 10) {
-    transactions = transactions.slice(-10);
+// Limit history to 50 items to save space and consolidate old balance
+if (transactions.length > 50) {
+    transactions = transactions.slice(-50);
     localStorage.setItem('ptg_transactions', JSON.stringify(transactions));
 }
 
@@ -191,6 +191,16 @@ function completeTask(id) {
 }
 
 
+function deleteTask(id) {
+    const index = tasks.findIndex(t => t.id == id);
+    if (index !== -1) {
+        tasks.splice(index, 1);
+        saveTasks();
+        updateTaskSearchResults(taskSearchInput.value || '');
+    }
+}
+
+
 function saveTasks() {
     // Limit tasks history to last 50 items
     if (tasksHistory.length > 50) {
@@ -226,8 +236,11 @@ function updateTaskSearchResults(filter) {
     
     let html = filtered.map(t => `
         <div class="dynamic-item" data-id="${t.id}">
-            <span>${t.name}</span>
-            <strong>R$ ${t.value}</strong>
+            <div class="task-info">
+                <span>${t.name}</span>
+                <strong>R$ ${t.value}</strong>
+            </div>
+            <button class="delete-task-btn" data-id="${t.id}" title="Excluir Tarefa">×</button>
         </div>
     `).join('');
     
@@ -278,6 +291,17 @@ if (taskSearchResults) {
     taskSearchResults.addEventListener('click', (e) => {
         const item = e.target.closest('.dynamic-item');
         if (!item) return;
+
+        // Botão de deletar tarefa
+        if (e.target.classList.contains('delete-task-btn')) {
+            e.stopPropagation();
+            const taskId = e.target.dataset.id;
+            const task = tasks.find(t => t.id == taskId);
+            if (task && confirm(`Deseja excluir permanentemente a tarefa "${task.name}"?`)) {
+                deleteTask(taskId);
+            }
+            return;
+        }
         
         if (item.id === 'btn-open-create-task') {
             createTaskModal.classList.remove('hidden');

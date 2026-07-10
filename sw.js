@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ptg-balance-v11';
+const CACHE_NAME = 'ptg-balance-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -6,7 +6,8 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './regulamento.html',
-  './how_to_build_a_deck.html'
+  './how_to_build_a_deck.html',
+  './icon.svg'
 ];
 
 self.addEventListener('install', event => {
