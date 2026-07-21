@@ -84,6 +84,8 @@ const notification = document.getElementById('notification');
 const tabBtns = document.querySelectorAll('.tab-btn');
 const views = document.querySelectorAll('.view');
 const historyList = document.getElementById('history-list');
+const mtgRulesSearch = document.getElementById('mtg-rules-search');
+const mtgRulesContent = document.getElementById('mtg-rules-content');
 
 // Initialize
 updateUI();
@@ -453,12 +455,12 @@ if (btnDoSell) {
 
 // Navigation and Content Loading
 const loadedViews = {
-    'regulations-view': false,
+    'mtg-rules-view': false,
     'deck-guide-view': false
 };
 
 const viewFiles = {
-    'regulations-view': { file: 'regulamento.html', container: 'regulations-content' },
+    'mtg-rules-view': { file: 'mtg-rules.html', container: 'mtg-rules-content' },
     'deck-guide-view': { file: 'how_to_build_a_deck.html', container: 'deck-guide-content' }
 };
 
@@ -471,6 +473,11 @@ async function loadViewContent(target) {
             const html = await response.text();
             document.getElementById(container).innerHTML = html;
             loadedViews[target] = true;
+
+            // Trigger search if content is rules and there's a search term
+            if (target === 'mtg-rules-view' && mtgRulesSearch && mtgRulesSearch.value) {
+                mtgRulesSearch.dispatchEvent(new Event('input'));
+            }
         } catch (error) {
             console.error(error);
             document.getElementById(container).innerHTML = `<p class="error-msg">Erro ao carregar conteúdo: ${error.message}</p>`;
@@ -507,3 +514,25 @@ historyList.addEventListener('click', (e) => {
         }
     }
 });
+
+// MTG Rules Search Logic
+let mtgSearchTimeout;
+
+if (mtgRulesSearch) {
+    mtgRulesSearch.addEventListener('input', () => {
+        clearTimeout(mtgSearchTimeout);
+        mtgSearchTimeout = setTimeout(() => {
+            const term = mtgRulesSearch.value.toLowerCase().trim();
+            const elements = mtgRulesContent.querySelectorAll('p, h2, h3, div.example');
+            
+            elements.forEach(el => {
+                if (!term) {
+                    el.style.display = '';
+                } else {
+                    const text = el.textContent.toLowerCase();
+                    el.style.display = text.includes(term) ? '' : 'none';
+                }
+            });
+        }, 300);
+    });
+}

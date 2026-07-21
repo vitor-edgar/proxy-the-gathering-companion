@@ -428,7 +428,7 @@ hr {
     display: none !important;
 }
 
-/* Info Views (Regulamento e Guia) */
+/* Info Views (Regras e Guia) */
 .info-content {
     text-align: left;
     line-height: 1.6;
@@ -687,4 +687,78 @@ hr {
     .grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* MTG Rules Styles */
+.search-bar {
+    position: sticky;
+    top: -25px; /* Compensa o padding do container */
+    background: var(--white);
+    padding: 10px 0;
+    margin-bottom: 15px;
+    z-index: 10;
+    border-bottom: 1px solid #eee;
+}
+
+#mtg-rules-search {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#mtg-rules-search:focus {
+    border-color: var(--primary);
+}
+
+#mtg-rules-content h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#mtg-rules-content h2 {
+    font-size: 1.4rem;
+    margin-top: 30px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 5px;
+}
+
+#mtg-rules-content h3 {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: var(--primary);
+}
+
+#mtg-rules-content .toc-item {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+#mtg-rules-content .rule {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+#mtg-rules-content .sub-rule {
+    margin-left: 20px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+#mtg-rules-content .example {
+    margin: 10px 0 15px 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #dee2e6;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+#mtg-rules-content p {
+    margin-bottom: 10px;
 }

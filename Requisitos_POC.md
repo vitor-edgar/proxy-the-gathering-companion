@@ -27,10 +27,10 @@ Criar uma ferramenta minimalista e rápida para que o usuário possa registrar c
 *   **Exclusão de Operações:** O usuário deve ser capaz de excluir uma transação do histórico, o que deve reverter automaticamente o impacto no saldo total.
 
 ### RF05 – Navegação
-*   Interface com abas para alternar entre "Saldo", "Histórico", "Regulamento" e "Montar Deck".
+*   Interface com abas para alternar entre "Saldo", "Histórico", "Regras MTG" e "Montar Deck".
 
-### RF06 – Conteúdo Informativo (NOVO)
-*   O sistema deve exibir o Regulamento completo do sistema PTG Collection em uma aba dedicada.
+### RF06 – Conteúdo Informativo
+*   O sistema deve exibir as Regras Abrangentes de Magic: The Gathering em uma aba dedicada com busca.
 *   O sistema deve exibir um Guia de montagem de decks Commander em uma aba dedicada.
 *   O conteúdo informativo deve ser estilizado para leitura confortável no navegador.
 

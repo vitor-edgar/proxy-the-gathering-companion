@@ -1,11 +1,11 @@
-const CACHE_NAME = 'ptg-balance-v12';
+const CACHE_NAME = 'ptg-balance-v13';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
-  './regulamento.html',
+  './mtg-rules.html',
   './how_to_build_a_deck.html',
   './icon.svg'
 ];
