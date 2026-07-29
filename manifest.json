@@ -1,7 +1,7 @@
 {
-  "name": "PTG Balance Tracker",
-  "short_name": "PTG Balance",
-  "description": "Controle de saldo para Proxy The Gathering Collection",
+  "name": "Proxy The Gathering Companion",
+  "short_name": "PTG Companion",
+  "description": "Controle de saldo para Proxy The Gathering Companion",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f7f6",
