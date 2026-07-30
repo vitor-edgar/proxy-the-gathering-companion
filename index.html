@@ -130,7 +130,39 @@
                 <h3>Nova Tarefa</h3>
                 <div class="modal-form">
                     <input type="text" id="new-task-name" placeholder="Nome da Tarefa">
-                    <input type="number" id="new-task-value" placeholder="Valor da Recompensa" step="0.01">
+                    <div class="indicator-row">
+                        <label>Importância</label>
+                        <div class="star-rating" data-indicator="importance">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <div class="indicator-row">
+                        <label>Esforço</label>
+                        <div class="star-rating" data-indicator="effort">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <div class="indicator-row">
+                        <label>Tempo</label>
+                        <div class="star-rating" data-indicator="time">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <div id="new-task-value-display" class="total-display">
+                        Recompensa: R$ 0,00
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button id="create-task-cancel" class="btn-secondary">Cancelar</button>

@@ -424,6 +424,32 @@ hr {
     font-weight: 600;
 }
 
+.indicator-row {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.star-rating {
+    display: flex;
+    gap: 10px;
+    font-size: 1.8rem;
+    color: #ddd;
+    cursor: pointer;
+    justify-content: center;
+}
+
+.star-rating .star {
+    transition: color 0.2s, transform 0.1s;
+}
+
+.star-rating .star:hover {
+    transform: scale(1.2);
+}
+
+.star-rating .star.active {
+    color: #f1c40f;
+}
+
 .hidden {
     display: none !important;
 }
@@ -607,6 +633,44 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 2px;
+}
+
+.task-indicators-display {
+    display: flex;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.stars-outer {
+    position: relative;
+    display: inline-block;
+    font-size: 0.9rem;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+.stars-outer::before {
+    content: "★★★★★";
+    color: #ddd;
+}
+
+.stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+}
+
+.stars-inner::before {
+    content: "★★★★★";
+    color: #f1c40f;
+}
+
+.task-indicators-display span {
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .task-name {

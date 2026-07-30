@@ -4,24 +4,68 @@ let transactions = JSON.parse(localStorage.getItem('ptg_transactions')) || [];
 let tasks = JSON.parse(localStorage.getItem('ptg_tasks')) || [];
 let tasksHistory = JSON.parse(localStorage.getItem('ptg_tasks_history')) || [];
 
+const BASE_PRICE = 30.0;
+
+const importanceMultipliers = {
+    1: 0.5,
+    2: 0.75,
+    3: 1.0,
+    4: 1.25,
+    5: 1.5
+};
+
+const effortMultipliers = {
+    1: 0.5,
+    2: 0.75,
+    3: 1.0,
+    4: 1.5,
+    5: 2.0
+};
+
+const timeMultipliers = {
+    1: 0.25,
+    2: 0.5,
+    3: 1.0,
+    4: 2.0,
+    5: 3.0
+};
+
 // Initialize default tasks if none exist
 if (tasks.length === 0) {
     tasks = [
-        { id: 1, name: 'Escovar Dentes', value: 2.5, isRecurring: true },
-        { id: 2, name: 'Arrumar Cama', value: 5, isRecurring: true },
-        { id: 3, name: 'Café Matinal Saudável', value: 5, isRecurring: true },
-        { id: 4, name: 'Code Review', value: 10, isRecurring: true },
-        { id: 5, name: 'Potato Walk (30m)', value: 12.5, isRecurring: true },
-        { id: 6, name: 'Almoço Saudável', value: 10, isRecurring: true },
-        { id: 7, name: 'Lavar Louça', value: 5, isRecurring: true },
-        { id: 8, name: 'Completar Task Trabalho', value: 20, isRecurring: true },
-        { id: 9, name: 'Lanche Tarde Saudável', value: 5, isRecurring: true },
-        { id: 10, name: 'Jantar Saudável', value: 10, isRecurring: true },
-        { id: 11, name: 'Malhar', value: 15, isRecurring: true },
-        { id: 12, name: 'Corrida (1km)', value: 10, isRecurring: true }
+        {id: 1, name: 'Escovar Dentes', indicators: { importance: 4, effort: 1, time: 1 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
+        {id: 2, name: 'Arrumar Cama', indicators: { importance: 2, effort: 2, time: 1 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
+        {id: 3, name: 'Refeição Saudável', indicators: { importance: 4, effort: 2, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
+        {id: 4, name: 'Task no Trabalho', indicators: { importance: 3, effort: 3, time: 3 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
+        {id: 5, name: 'Potato Walk(30m)', indicators: { importance: 3, effort: 3, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
+        {id: 6, name: 'Malhar', indicators: { importance: 3, effort: 4, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null}
     ];
+    // Calculate initial values for default tasks
+    tasks = tasks.map(t => {
+        const importanceMult = importanceMultipliers[t.indicators.importance] || 1;
+        const effortMult = effortMultipliers[t.indicators.effort] || 1;
+        const timeMult = timeMultipliers[t.indicators.time] || 1;
+        t.value = BASE_PRICE * importanceMult * effortMult * timeMult;
+        return t;
+    });
     localStorage.setItem('ptg_tasks', JSON.stringify(tasks));
 }
+
+// Migrate tasks to the new pricing formula (All indicators as Multipliers)
+if (!localStorage.getItem('ptg_migration_all_multipliers')) {
+    tasks = tasks.map(t => {
+        if (t.indicators) {
+            const importanceMult = importanceMultipliers[t.indicators.importance] || 1;
+            const effortMult = effortMultipliers[t.indicators.effort] || 1;
+            const timeMult = timeMultipliers[t.indicators.time] || 1;
+            t.value = BASE_PRICE * importanceMult * effortMult * timeMult;
+        }
+        return t;
+    });
+    localStorage.setItem('ptg_tasks', JSON.stringify(tasks));
+    localStorage.setItem('ptg_migration_all_multipliers', 'true');
+}
+
 
 // Migrate existing transactions to have IDs if they don't
 let migrated = false;
@@ -68,9 +112,17 @@ const confirmModalCancel = document.getElementById('confirm-modal-cancel');
 
 const createTaskModal = document.getElementById('create-task-modal');
 const newTaskName = document.getElementById('new-task-name');
-const newTaskValue = document.getElementById('new-task-value');
+const newTaskValueDisplay = document.getElementById('new-task-value-display');
 const createTaskConfirm = document.getElementById('create-task-confirm');
 const createTaskCancel = document.getElementById('create-task-cancel');
+
+
+let currentIndicators = {
+    importance: 1,
+    effort: 1,
+    time: 1
+};
+
 
 const buyModal = document.getElementById('buy-modal');
 const buyModalTitle = document.getElementById('buy-modal-title');
@@ -212,6 +264,34 @@ function saveTasks() {
     localStorage.setItem('ptg_tasks_history', JSON.stringify(tasksHistory));
 }
 
+function updateStarUI(indicator, value) {
+    const container = document.querySelector(`.star-rating[data-indicator="${indicator}"]`);
+    if (!container) return;
+    
+    const stars = container.querySelectorAll('.star');
+    stars.forEach(s => {
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add('active');
+        } else {
+            s.classList.remove('active');
+        }
+    });
+    currentIndicators[indicator] = value;
+    updateNewTaskValue();
+}
+
+function updateNewTaskValue() {
+    if (!newTaskValueDisplay) return 0;
+
+    const importanceMult = importanceMultipliers[currentIndicators.importance] || 1;
+    const effortMult = effortMultipliers[currentIndicators.effort] || 1;
+    const timeMult = timeMultipliers[currentIndicators.time] || 1;
+    const total = BASE_PRICE * importanceMult * effortMult * timeMult;
+    
+    newTaskValueDisplay.textContent = `Recompensa: R$ ${total.toFixed(2).replace('.', ',')}`;
+    return total;
+}
+
 // Tracker Logic
 function showTrackerSection(sectionId) {
     trackerMainActions.classList.add('hidden');
@@ -236,15 +316,24 @@ function updateTaskSearchResults(filter) {
     const term = filter.toLowerCase();
     const filtered = tasks.filter(t => t.name.toLowerCase().includes(term));
     
-    let html = filtered.map(t => `
+    let html = filtered.map(t => {
+        const indicators = t.indicators || { importance: 1, effort: 1, time: 1 };
+        const avg = (indicators.importance + indicators.effort + indicators.time) / 3;
+        const percentage = (avg / 5) * 100;
+        return `
         <div class="dynamic-item" data-id="${t.id}">
             <div class="task-info">
-                <span>${t.name}</span>
-                <strong>R$ ${t.value}</strong>
+                <span class="task-name">${t.name}</span>
+                <div class="task-indicators-display">
+                    <div class="stars-outer" title="Média: ${avg.toFixed(1)}">
+                        <div class="stars-inner" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <strong>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.value)}</strong>
             </div>
             <button class="delete-task-btn" data-id="${t.id}" title="Excluir Tarefa">×</button>
         </div>
-    `).join('');
+    `}).join('');
     
     html += `
         <div class="dynamic-item add-btn" id="btn-open-create-task">
@@ -308,7 +397,10 @@ if (taskSearchResults) {
         if (item.id === 'btn-open-create-task') {
             createTaskModal.classList.remove('hidden');
             newTaskName.value = taskSearchInput.value;
-            newTaskValue.value = '';
+            // Reset indicators to default level 1
+            updateStarUI('importance', 1);
+            updateStarUI('effort', 1);
+            updateStarUI('time', 1);
             setTimeout(() => newTaskName.focus(), 100);
             return;
         }
@@ -318,7 +410,8 @@ if (taskSearchResults) {
         if (task) {
             selectedTaskId = taskId;
             confirmModalTitle.textContent = 'Registrar Tarefa';
-            confirmModalBody.textContent = `Deseja registrar a conclusão de "${task.name}" e ganhar R$ ${task.value}?`;
+            const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(task.value);
+            confirmModalBody.textContent = `Deseja registrar a conclusão de "${task.name}" e ganhar ${formattedValue}?`;
             confirmModal.classList.remove('hidden');
         }
     });
@@ -346,13 +439,14 @@ if (confirmModalCancel) {
 if (createTaskConfirm) {
     createTaskConfirm.addEventListener('click', () => {
         const name = newTaskName.value.trim();
-        const value = parseFloat(newTaskValue.value);
+        const value = updateNewTaskValue();
         
         if (name && !isNaN(value)) {
             const newTask = {
                 id: Date.now(),
                 name: name,
                 value: value,
+                indicators: { ...currentIndicators },
                 createdAt: new Date().toLocaleString('pt-BR'),
                 isRecurring: false,
                 interval: null
@@ -370,6 +464,18 @@ if (createTaskCancel) {
         createTaskModal.classList.add('hidden');
     });
 }
+
+// Star Rating Interaction
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('star')) {
+        const ratingContainer = e.target.closest('.star-rating');
+        if (ratingContainer) {
+            const indicator = ratingContainer.dataset.indicator;
+            const value = parseInt(e.target.dataset.value);
+            updateStarUI(indicator, value);
+        }
+    }
+});
 
 // Buy Logic
 let selectedBuyItem = null;
