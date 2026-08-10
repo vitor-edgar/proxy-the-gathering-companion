@@ -4,7 +4,7 @@ let transactions = JSON.parse(localStorage.getItem('ptg_transactions')) || [];
 let tasks = JSON.parse(localStorage.getItem('ptg_tasks')) || [];
 let tasksHistory = JSON.parse(localStorage.getItem('ptg_tasks_history')) || [];
 
-const BASE_PRICE = 30.0;
+const BASE_PRICE = 6.0;
 
 const importanceMultipliers = {
     1: 0.5,
@@ -33,12 +33,12 @@ const timeMultipliers = {
 // Initialize default tasks if none exist
 if (tasks.length === 0) {
     tasks = [
-        {id: 1, name: 'Escovar Dentes', indicators: { importance: 4, effort: 1, time: 1 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
-        {id: 2, name: 'Arrumar Cama', indicators: { importance: 2, effort: 2, time: 1 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
-        {id: 3, name: 'Refeição Saudável', indicators: { importance: 4, effort: 2, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
-        {id: 4, name: 'Task no Trabalho', indicators: { importance: 3, effort: 3, time: 3 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
-        {id: 5, name: 'Potato Walk(30m)', indicators: { importance: 3, effort: 3, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null},
-        {id: 6, name: 'Malhar', indicators: { importance: 3, effort: 4, time: 2 }, createdAt: new Date().toLocaleString('pt-BR'), isRecurring: false, interval: null}
+        {id: 1, name: 'Escovar Dentes', indicators: { importance: 4, effort: 1, time: 1 }, createdAt: new Date().toLocaleString('pt-BR')},
+        {id: 2, name: 'Arrumar Cama', indicators: { importance: 2, effort: 2, time: 1 }, createdAt: new Date().toLocaleString('pt-BR')},
+        {id: 3, name: 'Refeição Saudável', indicators: { importance: 4, effort: 2, time: 2 }, createdAt: new Date().toLocaleString('pt-BR')},
+        {id: 4, name: 'Task no Trabalho', indicators: { importance: 3, effort: 3, time: 3 }, createdAt: new Date().toLocaleString('pt-BR')},
+        {id: 5, name: 'Potato Walk(30m)', indicators: { importance: 3, effort: 3, time: 2 }, createdAt: new Date().toLocaleString('pt-BR')},
+        {id: 6, name: 'Malhar', indicators: { importance: 3, effort: 4, time: 2 }, createdAt: new Date().toLocaleString('pt-BR')}
     ];
     // Calculate initial values for default tasks
     tasks = tasks.map(t => {
@@ -145,9 +145,9 @@ updateHistoryUI();
 
 // Functions
 function updateUI() {
-    balanceEl.textContent = new Intl.NumberFormat('pt-BR', {
+    balanceEl.textContent = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'BRL'
+        currency: 'USD'
     }).format(balance);
 
     localStorage.setItem('ptg_balance', balance.toString());
@@ -177,9 +177,9 @@ function updateHistoryUI() {
             </div>
             <div class="history-right">
                 <span class="history-amount ${t.type}">
-                    ${t.type === 'credit' ? '+' : '-'} ${new Intl.NumberFormat('pt-BR', {
+                    ${t.type === 'credit' ? '+' : '-'} ${new Intl.NumberFormat('en-US', {
                         style: 'currency',
-                        currency: 'BRL'
+                        currency: 'USD'
                     }).format(t.amount)}
                 </span>
                 <button class="delete-btn" data-id="${t.id}" title="Excluir">×</button>
@@ -288,7 +288,7 @@ function updateNewTaskValue() {
     const timeMult = timeMultipliers[currentIndicators.time] || 1;
     const total = BASE_PRICE * importanceMult * effortMult * timeMult;
     
-    newTaskValueDisplay.textContent = `Recompensa: R$ ${total.toFixed(2).replace('.', ',')}`;
+    newTaskValueDisplay.textContent = `Recompensa: $ ${total.toFixed(2).replace('.', ',')}`;
     return total;
 }
 
@@ -329,7 +329,7 @@ function updateTaskSearchResults(filter) {
                         <div class="stars-inner" style="width: ${percentage}%"></div>
                     </div>
                 </div>
-                <strong>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.value)}</strong>
+                <strong>${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(t.value)}</strong>
             </div>
             <button class="delete-task-btn" data-id="${t.id}" title="Excluir Tarefa">×</button>
         </div>
@@ -410,7 +410,7 @@ if (taskSearchResults) {
         if (task) {
             selectedTaskId = taskId;
             confirmModalTitle.textContent = 'Registrar Tarefa';
-            const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(task.value);
+            const formattedValue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(task.value);
             confirmModalBody.textContent = `Deseja registrar a conclusão de "${task.name}" e ganhar ${formattedValue}?`;
             confirmModal.classList.remove('hidden');
         }
@@ -447,9 +447,7 @@ if (createTaskConfirm) {
                 name: name,
                 value: value,
                 indicators: { ...currentIndicators },
-                createdAt: new Date().toLocaleString('pt-BR'),
-                isRecurring: false,
-                interval: null
+                createdAt: new Date().toLocaleString('pt-BR')
             };
             tasks.push(newTask);
             saveTasks();
@@ -485,9 +483,9 @@ function updateBuyTotal() {
     const price = parseFloat(buyPriceInput.value) || 0;
     const quantity = parseInt(buyQuantityInput.value) || 0;
     const total = price * quantity;
-    buyTotalDisplay.textContent = `Total: ${new Intl.NumberFormat('pt-BR', {
+    buyTotalDisplay.textContent = `Total: ${new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'BRL'
+        currency: 'USD'
     }).format(total)}`;
 }
 
